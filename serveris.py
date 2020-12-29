@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, json
+from flask import Flask, jsonify, render_template, json, request
 import dati
 
 
@@ -56,6 +56,27 @@ def viela_id(vielasID):
         if v["id"] == int(vielasID):
             viela = v
     return jsonify(viela)
+
+@app.route('/api/v1/viela', methods = ['POST'])
+def pievienot_vielu():
+  datne = "dati/vielas.json"
+
+  with open(datne, "r", encoding = "utf-8") as f:
+    vielas = json.loads(f.read())
+
+  last_id = vielas[len(vielas) - 1]['id']
+  
+  jauna_viela = json.loads(request.data)
+  jauna_viela['id'] = last_id + 1
+
+  vielas.append(jauna_viela)
+
+  with open(datne, "w", encoding = "utf-8") as f:
+    f.write(json.dumps(vielas))
+  
+  return "1"
+
+
 
 
 @app.route('/api/v1/<kategorija>/<id>/dzest', methods = ['POST'])
